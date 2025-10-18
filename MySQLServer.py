@@ -1,15 +1,16 @@
+import os
 import mysql.connector
 from mysql.connector import Error
 
 def main():
+    host = os.environ.get("MYSQL_HOST", "localhost")
+    user = os.environ.get("MYSQL_USER", "root")
+    password = os.environ.get("MYSQL_PASSWORD", "")
+
     conn = None
     cursor = None
     try:
-        conn = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password=""
-        )
+        conn = mysql.connector.connect(host=host, user=user, password=password)
     except Error as err:
         print(f"Error: {err}")
         return
@@ -22,9 +23,15 @@ def main():
         print(f"Error: {err}")
     finally:
         if cursor is not None:
-            cursor.close()
+            try:
+                cursor.close()
+            except Exception:
+                pass
         if conn is not None and conn.is_connected():
-            conn.close()
+            try:
+                conn.close()
+            except Exception:
+                pass
 
 if __name__ == "__main__":
     main()
